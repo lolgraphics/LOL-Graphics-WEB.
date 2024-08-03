@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import '@testing-library/jest-dom';  // for extended matchers
-import App from '../../src/App';  // adjust the import path based on your project structure
+import '@testing-library/jest-dom'; 
+import App from '../../App';  
 
 test('renders the App component', () => {
   render(<App />);
