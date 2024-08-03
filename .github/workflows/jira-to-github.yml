@@ -1,0 +1,68 @@
+name: Abrir PR ao Mover Card
+
+on:
+  repository_dispatch:
+    types: [PR_OPEN]
+
+permissions:
+  contents: write
+  pull-requests: write  # Permissão necessária para criar pull requests
+
+jobs:
+  create-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Fetch all history so we can check branches
+
+      - name: Extract issue details
+        id: extract
+        run: |
+          echo "Extracting issue details"
+          echo "Issue Key: ${{ github.event.client_payload.issue_key }}"
+          echo "User Name: ${{ github.event.client_payload.user_name }}"
+
+      - name: Fetch all branches
+        run: |
+          git fetch --all
+
+      - name: Check if branch exists
+        id: check_branch
+        run: |
+          if git show-ref --verify --quiet refs/remotes/origin/${{ github.event.client_payload.issue_key }}; then
+            echo "Branch exists"
+          else
+            echo "Branch does not exist"
+            exit 1
+          fi
+
+      - name: Checkout issue branch
+        run: |
+          git checkout -b ${{ github.event.client_payload.issue_key }} origin/${{ github.event.client_payload.issue_key }}
+
+      - name: Print branch information
+        run: |
+          echo "Current branch: $(git branch --show-current)"
+          echo "Available branches:"
+          git branch -a
+
+      - name: Create Pull Request
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          PR_TITLE="PR para a issue ${{ github.event.client_payload.issue_key }} criado por ${{ github.actor }}"
+          PR_BODY="Este PR resolve a issue ${{ github.event.client_payload.issue_key }}.\nCriado por ${{ github.actor }}."
+          PR_BRANCH="${{ github.event.client_payload.issue_key }}"
+          PR_BASE="develop"
+
+          echo "Creating Pull Request with the following details:"
+          echo "Title: $PR_TITLE"
+          echo "Body: $PR_BODY"
+          echo "Head: $PR_BRANCH"
+          echo "Base: $PR_BASE"
+
+          curl -s -X POST -H "Authorization: token $GITHUB_TOKEN" -H "Content-Type: application/json" \
+            -d "{\"title\": \"$PR_TITLE\", \"head\": \"$PR_BRANCH\", \"base\": \"$PR_BASE\", \"body\": \"$PR_BODY\"}" \
+            https://api.github.com/repos/${{ github.repository }}/pulls
