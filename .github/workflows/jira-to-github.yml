@@ -23,6 +23,7 @@ jobs:
           node -e "
           (async () => {
             const { Octokit } = await import('@octokit/rest');
+            console.log(process.env)
             const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
             try {
               const { data: pullRequest } = await octokit.pulls.create({
