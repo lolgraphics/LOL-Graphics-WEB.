@@ -16,5 +16,14 @@ export default {
   // Coverage settings
   collectCoverage: true,
   coverageDirectory: 'coverage',
-  coverageReporters: ['lcov', 'json']
+  coverageReporters: ['lcov', 'json'],
+
+  // Reporter configuration
+  reporters: [
+    'default',
+    ['jest-sonar', {
+      outputDirectory: 'coverage/sonar',
+      outputName: 'coverage-report.xml'
+    }]
+  ],
 };
