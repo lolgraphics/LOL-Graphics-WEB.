@@ -25,10 +25,9 @@ jobs:
             const { Octokit } = await import('@octokit/rest');
             const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
             try {
-              console.log(github.repository_owner, github.repository);
               const { data: pullRequest } = await octokit.pulls.create({
-                owner: '${{ github.repository_owner }}',
-                repo: '${{ github.repository }}',
+                owner: "lolgraphics",
+                repo: 'LOL-Graphics-WEB',
                 title: 'PR Title',
                 body: 'PR Body',
                 head: '${{ github.event.client_payload.issue_key }}',
