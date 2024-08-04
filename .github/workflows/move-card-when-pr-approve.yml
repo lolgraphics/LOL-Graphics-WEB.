@@ -1,0 +1,14 @@
+name: Simple PR Event Test
+
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Log PR Event
+      run: |
+        echo "Pull Request Event Triggered"
+        echo "${{ toJson(github.event) }}"
