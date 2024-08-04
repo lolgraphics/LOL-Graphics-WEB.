@@ -21,21 +21,24 @@ jobs:
       - name: Create Pull Request
         run: |
           node -e "
-          const { Octokit } = require('@octokit/rest');
-          const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
-          octokit.pulls.create({
-            owner: '${{ github.repository_owner }}',
-            repo: '${{ github.repository }}',
-            title: 'PR Title',
-            body: 'PR Body',
-            head: '${{ github.event.client_payload.issue_key }}',
-            base: 'develop'
-          }).then(response => {
-            console.log('Pull request created:', response.data.html_url);
-          }).catch(error => {
-            console.error('Error creating pull request:', error);
-            process.exit(1);
-          });
-          " 
+          (async () => {
+            const { Octokit } = await import('@octokit/rest');
+            const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
+            try {
+              const { data: pullRequest } = await octokit.pulls.create({
+                owner: '${{ github.repository_owner }}',
+                repo: '${{ github.repository }}',
+                title: 'PR Title',
+                body: 'PR Body',
+                head: '${{ github.event.client_payload.issue_key }}',
+                base: 'develop'
+              });
+              console.log('Pull request created:', pullRequest.html_url);
+            } catch (error) {
+              console.error('Error creating pull request:', error);
+              process.exit(1);
+            }
+          })();
+          "
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
