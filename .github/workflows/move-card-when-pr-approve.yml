@@ -1,14 +1,37 @@
-name: Simple PR Event Test
+name: Move Jira Card
 
 on:
   pull_request:
     types: [closed]
 
 jobs:
-  test:
+  move-card:
     runs-on: ubuntu-latest
     steps:
-    - name: Log PR Event
-      run: |
-        echo "Pull Request Event Triggered"
-        echo "${{ toJson(github.event) }}"
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Move Jira Card
+        env:
+          JIRA_URL: ${{ secrets.JIRA_URL }}
+          ISSUE_KEY: ${{ secrets.ISSUE_KEY }}
+          JIRA_USERNAME: ${{ secrets.JIRA_USERNAME }}
+          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+          TRANSITION_ID: '3'  # Substitua pelo ID da transição para o status desejado
+        run: |
+          # Obter as transições possíveis para o issue
+          response=$(curl -s -u $JIRA_USERNAME:$JIRA_API_TOKEN \
+            -X GET \
+            -H "Accept: application/json" \
+            $JIRA_URL/rest/api/3/issue/$ISSUE_KEY/transitions)
+          
+          echo "Transições disponíveis: $response"
+          
+          # Realizar a transição para o status desejado
+          curl -s -u $JIRA_USERNAME:$JIRA_API_TOKEN \
+            -X POST \
+            -H "Accept: application/json" \
+            -H "Content-Type: application/json" \
+            --data '{"transition": {"id": "'$TRANSITION_ID'"}}' \
+            $JIRA_URL/rest/api/3/issue/$ISSUE_KEY/transitions
+
