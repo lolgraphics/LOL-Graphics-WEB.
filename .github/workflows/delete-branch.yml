@@ -1,0 +1,80 @@
+name: Delete Branch When Jira Card is Moved to Done
+
+on:
+  repository_dispatch:
+    types: [DELETE_BRANCH]
+
+permissions:
+  contents: write  # Permissão para excluir branches
+  issues: read     # Permissão para ler informações do Jira
+
+jobs:
+  delete-branch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Extract issue details
+        id: extract
+        run: |
+          echo "Extracting issue details"
+          echo "Issue Key: ${{ github.event.client_payload.issue_key }}"
+          echo "Branch Name: ${{ github.event.client_payload.branch_name }}"
+
+      - name: Move Jira Card to Done
+        env:
+          JIRA_URL: ${{ secrets.JIRA_URL }}
+          JIRA_USERNAME: ${{ secrets.JIRA_USERNAME }}
+          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+          ISSUE_KEY: ${{ github.event.client_payload.issue_key }}
+          DONE_TRANSITION_ID: ${{ secrets.DONE_TRANSITION_ID }}
+        run: |
+          set -e  # Fail on any error
+
+          response=$(curl -s -w "\n%{http_code}" -u $JIRA_USERNAME:$JIRA_API_TOKEN \
+            -X GET \
+            -H "Accept: application/json" \
+            $JIRA_URL/rest/api/3/issue/$ISSUE_KEY/transitions)
+          
+          body=$(echo "$response" | head -n -1)
+          http_code=$(echo "$response" | tail -n1)
+          
+          echo "HTTP status code: $http_code"
+          echo "Transições disponíveis: $body"
+          
+          if [ "$http_code" -ne 200 ]; then
+            echo "Failed to get transitions. HTTP status code: $http_code. Exiting."
+            exit 1
+          fi
+          
+          # Realizar a transição para o status "Done"
+          response=$(curl -s -w "\n%{http_code}" -u $JIRA_USERNAME:$JIRA_API_TOKEN \
+            -X POST \
+            -H "Accept: application/json" \
+            -H "Content-Type: application/json" \
+            --data '{"transition": {"id": "'$DONE_TRANSITION_ID'"}}' \
+            $JIRA_URL/rest/api/3/issue/$ISSUE_KEY/transitions)
+          
+          http_code=$(echo "$response" | tail -n1)
+          body=$(echo "$response" | head -n -1)
+          
+          echo "HTTP status code: $http_code"
+          echo "Response body: $body"
+          
+          if [ "$http_code" -ne 204 ]; then
+            echo "Failed to transition issue to Done. HTTP status code: $http_code. Response body: $body. Exiting."
+            exit 1
+          fi
+
+      - name: Delete Branch
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH_NAME: ${{ github.event.client_payload.branch_name }}
+        run: |
+          set -e  # Fail on any error
+
+          echo "Deleting branch: $BRANCH_NAME"
+
+          # Excluir a branch
+          curl -s -X DELETE -H "Authorization: token $GITHUB_TOKEN" \
+            https://api.github.com/repos/${{ github.repository }}/git/refs/heads/$BRANCH_NAME
+          
+          echo "Branch $BRANCH_NAME deleted successfully"
