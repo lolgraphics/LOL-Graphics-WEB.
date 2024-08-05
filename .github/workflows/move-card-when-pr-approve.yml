@@ -1,14 +1,56 @@
-name: Simple PR Event Test
+name: Move Jira Card
 
 on:
   pull_request:
     types: [closed]
 
 jobs:
-  test:
+  move-card:
     runs-on: ubuntu-latest
     steps:
-    - name: Log PR Event
-      run: |
-        echo "Pull Request Event Triggered"
-        echo "${{ toJson(github.event) }}"
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Move Jira Card
+        env:
+          JIRA_URL: ${{ secrets.JIRA_URL }}
+          ISSUE_KEY: ${{ secrets.JIRA_ISSUE_KEY }}
+          JIRA_USERNAME: ${{ secrets.JIRA_USERNAME }}
+          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+          TRANSITION_ID: '3'  # Substitua pelo ID da transição para o status desejado
+        run: |
+          set -e  # Fail on any error
+          
+          # Obter as transições possíveis para o issue
+          response=$(curl -s -w "%{http_code}" -u $JIRA_USERNAME:$JIRA_API_TOKEN \
+            -X GET \
+            -H "Accept: application/json" \
+            $JIRA_URL/rest/api/3/issue/$ISSUE_KEY/transitions)
+          
+          http_code=$(echo "$response" | tail -n1)
+          body=$(echo "$response" | sed '$d')
+          
+          echo "HTTP status code: $http_code"
+          echo "Transições disponíveis: $body"
+          
+          if [ "$http_code" -ne 200 ]; then
+            echo "Failed to get transitions. Exiting."
+            exit 1
+          fi
+          
+          # Realizar a transição para o status desejado
+          response=$(curl -s -w "%{http_code}" -u $JIRA_USERNAME:$JIRA_API_TOKEN \
+            -X POST \
+            -H "Accept: application/json" \
+            -H "Content-Type: application/json" \
+            --data '{"transition": {"id": "'$TRANSITION_ID'"}}' \
+            $JIRA_URL/rest/api/3/issue/$ISSUE_KEY/transitions)
+          
+          http_code=$(echo "$response" | tail -n1)
+          
+          echo "HTTP status code: $http_code"
+          
+          if [ "$http_code" -ne 204 ]; then
+            echo "Failed to transition issue. Exiting."
+            exit 1
+          fi
