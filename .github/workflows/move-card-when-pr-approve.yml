@@ -22,24 +22,24 @@ jobs:
           set -e  # Fail on any error
           
           # Obter as transições possíveis para o issue
-          response=$(curl -s -w "%{http_code}" -u $JIRA_USERNAME:$JIRA_API_TOKEN \
+          response=$(curl -s -w "\n%{http_code}" -u $JIRA_USERNAME:$JIRA_API_TOKEN \
             -X GET \
             -H "Accept: application/json" \
             $JIRA_URL/rest/api/3/issue/$ISSUE_KEY/transitions)
           
+          body=$(echo "$response" | head -n -1)
           http_code=$(echo "$response" | tail -n1)
-          body=$(echo "$response" | sed '$d')
           
           echo "HTTP status code: $http_code"
           echo "Transições disponíveis: $body"
           
           if [ "$http_code" -ne 200 ]; then
-            echo "Failed to get transitions. Exiting."
+            echo "Failed to get transitions. HTTP status code: $http_code. Exiting."
             exit 1
           fi
           
           # Realizar a transição para o status desejado
-          response=$(curl -s -w "%{http_code}" -u $JIRA_USERNAME:$JIRA_API_TOKEN \
+          response=$(curl -s -w "\n%{http_code}" -u $JIRA_USERNAME:$JIRA_API_TOKEN \
             -X POST \
             -H "Accept: application/json" \
             -H "Content-Type: application/json" \
@@ -47,10 +47,12 @@ jobs:
             $JIRA_URL/rest/api/3/issue/$ISSUE_KEY/transitions)
           
           http_code=$(echo "$response" | tail -n1)
+          body=$(echo "$response" | head -n -1)
           
           echo "HTTP status code: $http_code"
+          echo "Response body: $body"
           
           if [ "$http_code" -ne 204 ]; then
-            echo "Failed to transition issue. Exiting."
+            echo "Failed to transition issue. HTTP status code: $http_code. Response body: $body. Exiting."
             exit 1
           fi
