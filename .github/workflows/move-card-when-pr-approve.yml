@@ -1,26 +1,32 @@
 name: Move Jira Card
 
 on:
-  pull_request:
-    types: [closed]
+  repository_dispatch:
+    types: [MOVE_CARD]
 
+permissions:
+  contents: read
 jobs:
   move-card:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
+      - name: Extract issue details
+        id: extract
+        run: |
+          echo "Extracting issue details"
+          echo "Issue Key: ${{ github.event.client_payload.issue_key }}"
+          echo "Transition ID: ${{ github.event.client_payload.transition_id }}"
 
       - name: Move Jira Card
         env:
           JIRA_URL: ${{ secrets.JIRA_URL }}
-          ISSUE_KEY: ${{ secrets.JIRA_ISSUE_KEY }}
           JIRA_USERNAME: ${{ secrets.JIRA_USERNAME }}
           JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
-          TRANSITION_ID: '3'  # Substitua pelo ID da transição para o status desejado
+          ISSUE_KEY: ${{ github.event.client_payload.issue_key }}
+          TRANSITION_ID: ${{ github.event.client_payload.transition_id }}
         run: |
           set -e  # Fail on any error
-          
+
           # Obter as transições possíveis para o issue
           response=$(curl -s -w "\n%{http_code}" -u $JIRA_USERNAME:$JIRA_API_TOKEN \
             -X GET \
