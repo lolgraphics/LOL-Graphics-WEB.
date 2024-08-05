@@ -1,65 +1,68 @@
-name: Move Jira Card
+name: open pull request when moving card from progress to PR Pending
 
 on:
   repository_dispatch:
-    types: [MOVE_CARD]
+    types: [PR_OPEN]
 
 permissions:
-  contents: read
+  contents: write
+  pull-requests: write  # Permissão necessária para criar pull requests
 
 jobs:
-  move-card:
+  create-pr:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Fetch all history so we can check branches
+
       - name: Extract issue details
         id: extract
         run: |
           echo "Extracting issue details"
           echo "Issue Key: ${{ github.event.client_payload.issue_key }}"
-          echo "Transition ID: ${{ github.event.client_payload.transition_id }}"
+          echo "User Name: ${{ github.event.client_payload.user_name }}"
 
-      - name: Move Jira Card
-        env:
-          JIRA_URL: ${{ secrets.JIRA_URL }}
-          JIRA_USERNAME: ${{ secrets.JIRA_USERNAME }}
-          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
-          ISSUE_KEY: ${{ github.event.client_payload.issue_key }}
-          TRANSITION_ID: ${{ github.event.client_payload.transition_id }}
+      - name: Fetch all branches
         run: |
-          set -e  # Fail on any error
+          git fetch --all
 
-          # Obter as transições possíveis para o issue
-          response=$(curl -s -w "\n%{http_code}" -u $JIRA_USERNAME:$JIRA_API_TOKEN \
-            -X GET \
-            -H "Accept: application/json" \
-            $JIRA_URL/rest/api/3/issue/$ISSUE_KEY/transitions)
-          
-          body=$(echo "$response" | head -n -1)
-          http_code=$(echo "$response" | tail -n1)
-          
-          echo "HTTP status code: $http_code"
-          echo "Transições disponíveis: $body"
-          
-          if [ "$http_code" -ne 200 ]; then
-            echo "Failed to get transitions. HTTP status code: $http_code. Exiting."
+      - name: Check if branch exists
+        id: check_branch
+        run: |
+          if git show-ref --verify --quiet refs/remotes/origin/${{ github.event.client_payload.issue_key }}; then
+            echo "Branch exists"
+          else
+            echo "Branch does not exist"
             exit 1
           fi
-          
-          # Realizar a transição para o status desejado
-          response=$(curl -s -w "\n%{http_code}" -u $JIRA_USERNAME:$JIRA_API_TOKEN \
-            -X POST \
-            -H "Accept: application/json" \
-            -H "Content-Type: application/json" \
-            --data '{"transition": {"id": "'$TRANSITION_ID'"}}' \
-            $JIRA_URL/rest/api/3/issue/$ISSUE_KEY/transitions)
-          
-          http_code=$(echo "$response" | tail -n1)
-          body=$(echo "$response" | head -n -1)
-          
-          echo "HTTP status code: $http_code"
-          echo "Response body: $body"
-          
-          if [ "$http_code" -ne 204 ]; then
-            echo "Failed to transition issue. HTTP status code: $http_code. Response body: $body. Exiting."
-            exit 1
-          fi
+
+      - name: Checkout issue branch
+        run: |
+          git checkout -b ${{ github.event.client_payload.issue_key }} origin/${{ github.event.client_payload.issue_key }}
+
+      - name: Print branch information
+        run: |
+          echo "Current branch: $(git branch --show-current)"
+          echo "Available branches:"
+          git branch -a
+
+      - name: Create Pull Request
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          PR_TITLE="PR para a issue ${{ github.event.client_payload.issue_key }} criado por ${{ github.actor }}"
+          PR_BODY="${{ github.event.client_payload.issue_key }}"
+          PR_BRANCH="${{ github.event.client_payload.issue_key }}"
+          PR_BASE="develop"
+
+          echo "Creating Pull Request with the following details:"
+          echo "Title: $PR_TITLE"
+          echo "Body: $PR_BODY"
+          echo "Head: $PR_BRANCH"
+          echo "Base: $PR_BASE"
+
+          curl -s -X POST -H "Authorization: token $GITHUB_TOKEN" -H "Content-Type: application/json" \
+            -d "{\"title\": \"$PR_TITLE\", \"head\": \"$PR_BRANCH\", \"base\": \"$PR_BASE\", \"body\": \"$PR_BODY\"}" \
+            https://api.github.com/repos/${{ github.repository }}/pulls
