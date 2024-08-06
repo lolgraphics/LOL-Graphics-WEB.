@@ -1,0 +1,37 @@
+name: Delete Branch by Issue Key
+
+on:
+  repository_dispatch:
+    types: [DELETE_BRANCH]
+
+permissions:
+  contents: write  # Permissão necessária para excluir branches
+
+jobs:
+  delete-branch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Fetch all history so we can delete branches
+
+      - name: Delete Branch
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH_NAME: ${{ github.event.client_payload.issue_key }}
+        run: |
+          set -e  # Fail on any error
+
+          echo "Deleting branch: $BRANCH_NAME"
+
+          # Excluir a branch
+          response=$(curl -s -o /dev/null -w "%{http_code}" -X DELETE -H "Authorization: token $GITHUB_TOKEN" \
+            https://api.github.com/repos/${{ github.repository }}/git/refs/heads/$BRANCH_NAME)
+
+          if [ "$response" -eq 204 ]; then
+            echo "Branch $BRANCH_NAME deleted successfully"
+          else
+            echo "Failed to delete branch $BRANCH_NAME. HTTP status code: $response"
+            exit 1
+          fi
