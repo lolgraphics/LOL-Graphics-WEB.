@@ -1,7 +1,7 @@
 export default {
   preset: 'ts-jest',
   testEnvironment: 'jsdom',
-  testMatch: ['**/src/tests/unit/**/*.test.[jt]s?(x)'], 
+  testMatch: ['**/tests/unit/**/*.test.[jt]s?(x)'], 
   setupFilesAfterEnv: ['@testing-library/jest-dom'],
   moduleNameMapper: {
     '\\.(css|less|scss|sass)$': 'identity-obj-proxy'
