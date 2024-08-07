@@ -6,6 +6,7 @@ on:
 
 permissions:
   contents: read
+
 jobs:
   move-card:
     runs-on: ubuntu-latest
@@ -16,14 +17,44 @@ jobs:
           echo "Extracting issue details"
           echo "Issue Key: ${{ github.event.client_payload.issue_key }}"
           echo "Transition ID: ${{ github.event.client_payload.transition_id }}"
+          echo "ISSUE_KEY=${{ github.event.client_payload.issue_key }}" >> $GITHUB_ENV
 
+      - name: Get open pull requests
+        id: get_prs
+        run: |
+          PRS=$(curl -H "Accept: application/vnd.github.v3+json" \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            https://api.github.com/repos/lolgraphics/LOL-Graphics-WEB/pulls)
+          echo "::set-output name=prs::$PRS"
+
+      - name: Compare PR bodies
+        id: compare_bodies
+        run: |
+          ISSUE_KEY=${{ env.ISSUE_KEY }}
+          prs='${{ steps.get_prs.outputs.prs }}'
+          
+          echo "Checking for ISSUE_KEY: $ISSUE_KEY"
+          
+          for row in $(echo "${prs}" | jq -r '.[] | @base64'); do
+            _jq() {
+              echo ${row} | base64 --decode | jq -r ${1}
+            }
+            pr_body=$(_jq '.body')
+            echo "Found PR body: $pr_body"
+            if [ "$pr_body" == "$ISSUE_KEY" ]; then
+              echo "PR body $pr_body matches ISSUE_KEY $ISSUE_KEY. Stopping script."
+              exit 1
+            fi
+          done
+        shell: bash
+        
       - name: Move Jira Card
         env:
           JIRA_URL: ${{ secrets.JIRA_URL }}
           JIRA_USERNAME: ${{ secrets.JIRA_USERNAME }}
           JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
           ISSUE_KEY: ${{ github.event.client_payload.issue_key }}
-          TRANSITION_ID: ${{ github.event.client_payload.transition_id }}
+          TRANSITION_ID: ${{ secrets.DONE_TRANSITION_ID }}
         run: |
           set -e  # Fail on any error
 
