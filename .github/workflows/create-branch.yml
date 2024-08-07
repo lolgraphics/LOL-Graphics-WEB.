@@ -1,15 +1,14 @@
-name: open pull request when moving card from progress to PR Pending
+name: Create branch when moving card to in progress
 
 on:
   repository_dispatch:
-    types: [PR_OPEN]
+    types: [CREATE_BRANCH]
 
 permissions:
-  contents: write
-  pull-requests: write  # Permissão necessária para criar pull requests
+  contents: write  # Permission required to create branches
 
 jobs:
-  create-pr:
+  create-branch:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -22,47 +21,21 @@ jobs:
         run: |
           echo "Extracting issue details"
           echo "Issue Key: ${{ github.event.client_payload.issue_key }}"
-          echo "User Name: ${{ github.event.client_payload.user_name }}"
-
       - name: Fetch all branches
         run: |
           git fetch --all
-
       - name: Check if branch exists
         id: check_branch
         run: |
           if git show-ref --verify --quiet refs/remotes/origin/${{ github.event.client_payload.issue_key }}; then
-            echo "Branch exists"
+            echo "Branch already exists"
           else
             echo "Branch does not exist"
-            exit 1
           fi
-
-      - name: Checkout issue branch
+      - name: Create new branch
         run: |
-          git checkout -b ${{ github.event.client_payload.issue_key }} origin/${{ github.event.client_payload.issue_key }}
-
-      - name: Print branch information
+          git checkout -b ${{ github.event.client_payload.issue_key }}
+          git push origin ${{ github.event.client_payload.issue_key }}
+      - name: Log branch creation
         run: |
-          echo "Current branch: $(git branch --show-current)"
-          echo "Available branches:"
-          git branch -a
-
-      - name: Create Pull Request
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          PR_TITLE="PR para a issue ${{ github.event.client_payload.issue_key }} criado por ${{ github.actor }}"
-          PR_BODY="${{ github.event.client_payload.issue_key }}"
-          PR_BRANCH="${{ github.event.client_payload.issue_key }}"
-          PR_BASE="develop"
-
-          echo "Creating Pull Request with the following details:"
-          echo "Title: $PR_TITLE"
-          echo "Body: $PR_BODY"
-          echo "Head: $PR_BRANCH"
-          echo "Base: $PR_BASE"
-
-          curl -s -X POST -H "Authorization: token $GITHUB_TOKEN" -H "Content-Type: application/json" \
-            -d "{\"title\": \"$PR_TITLE\", \"head\": \"$PR_BRANCH\", \"base\": \"$PR_BASE\", \"body\": \"$PR_BODY\"}" \
-            https://api.github.com/repos/${{ github.repository }}/pulls
+          echo "Branch created: ${{ github.event.client_payload.issue_key }}"
