@@ -17,6 +17,35 @@ jobs:
           echo "Issue Key: ${{ github.event.client_payload.issue_key }}"
           echo "Transition ID: ${{ github.event.client_payload.transition_id }}"
 
+      - name: Get open pull requests
+        id: get_prs
+        run: |
+          PRS=$(curl -H "Accept: application/vnd.github.v3+json" \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            https://api.github.com/repos/lolgraphics/lolgraphs.api/pulls)
+          echo "::set-output name=prs::$PRS"
+
+      - name: Compare branch names
+        id: compare_branches
+        run: |
+          ISSUE_KEY=${{ env.ISSUE_KEY }}
+          prs='${{ steps.get_prs.outputs.prs }}'
+          
+          echo "Checking for ISSUE_KEY: $ISSUE_KEY"
+          
+          for row in $(echo "${prs}" | jq -r '.[] | @base64'); do
+            _jq() {
+              echo ${row} | base64 --decode | jq -r ${1}
+            }
+            branch_name=$(_jq '.head.ref')
+            echo "Found branch: $branch_name"
+            if [ "$branch_name" == "$ISSUE_KEY" ]; then
+              echo "Branch name $branch_name matches ISSUE_KEY $ISSUE_KEY. Stopping script."
+              exit 1
+            fi
+          done
+        shell: bash
+        
       - name: Move Jira Card
         env:
           JIRA_URL: ${{ secrets.JIRA_URL }}
