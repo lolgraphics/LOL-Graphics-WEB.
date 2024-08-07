@@ -1,5 +1,4 @@
 # League OF Legends Statistics
 
 * npm install
-* npm run dev
-22
+* npm run devv
