@@ -6,7 +6,6 @@ on:
 
 permissions:
   contents: read
-
 jobs:
   move-card:
     runs-on: ubuntu-latest
@@ -17,12 +16,49 @@ jobs:
           echo "Extracting issue details"
           echo "Issue Key: ${{ github.event.client_payload.issue_key }}"
           echo "Transition ID: ${{ github.event.client_payload.transition_id }}"
-          echo "ISSUE_KEY=${{ github.event.client_payload.issue_key }}" >> $GITHUB_ENV
 
-      - name: Get open pull requests
-        id: get_prs
+      - name: Move Jira Card
+        env:
+          JIRA_URL: ${{ secrets.JIRA_URL }}
+          JIRA_USERNAME: ${{ secrets.JIRA_USERNAME }}
+          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+          ISSUE_KEY: ${{ github.event.client_payload.issue_key }}
+          TRANSITION_ID: ${{ github.event.client_payload.transition_id }}
         run: |
-          PRS=$(curl -H "Accept: application/vnd.github.v3+json" \
-            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-            https://api.github.com/repos/lolgraphics/lolgraphs.api/pulls)
-          echo "::set-output name=prs::$PRS"
+          set -e  # Fail on any error
+
+          # Obter as transições possíveis para o issue
+          response=$(curl -s -w "\n%{http_code}" -u $JIRA_USERNAME:$JIRA_API_TOKEN \
+            -X GET \
+            -H "Accept: application/json" \
+            $JIRA_URL/rest/api/3/issue/$ISSUE_KEY/transitions)
+          
+          body=$(echo "$response" | head -n -1)
+          http_code=$(echo "$response" | tail -n1)
+          
+          echo "HTTP status code: $http_code"
+          echo "Transições disponíveis: $body"
+          
+          if [ "$http_code" -ne 200 ]; then
+            echo "Failed to get transitions. HTTP status code: $http_code. Exiting."
+            exit 1
+          fi
+          
+          # Realizar a transição para o status desejado
+          response=$(curl -s -w "\n%{http_code}" -u $JIRA_USERNAME:$JIRA_API_TOKEN \
+            -X POST \
+            -H "Accept: application/json" \
+            -H "Content-Type: application/json" \
+            --data '{"transition": {"id": "'$TRANSITION_ID'"}}' \
+            $JIRA_URL/rest/api/3/issue/$ISSUE_KEY/transitions)
+          
+          http_code=$(echo "$response" | tail -n1)
+          body=$(echo "$response" | head -n -1)
+          
+          echo "HTTP status code: $http_code"
+          echo "Response body: $body"
+          
+          if [ "$http_code" -ne 204 ]; then
+            echo "Failed to transition issue. HTTP status code: $http_code. Response body: $body. Exiting."
+            exit 1
+          fi
