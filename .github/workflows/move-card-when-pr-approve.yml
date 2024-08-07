@@ -24,7 +24,7 @@ jobs:
         run: |
           PRS=$(curl -H "Accept: application/vnd.github.v3+json" \
             -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-            https://api.github.com/repos/lolgraphics/LOL-Graphics-WEB/pulls)
+            https://api.github.com/repos/lolgraphics/lolgraphs.api/pulls)
           echo "::set-output name=prs::$PRS"
 
       - name: Compare PR bodies
