@@ -6,6 +6,7 @@ on:
 
 permissions:
   contents: read
+
 jobs:
   move-card:
     runs-on: ubuntu-latest
@@ -16,6 +17,7 @@ jobs:
           echo "Extracting issue details"
           echo "Issue Key: ${{ github.event.client_payload.issue_key }}"
           echo "Transition ID: ${{ github.event.client_payload.transition_id }}"
+          echo "ISSUE_KEY=${{ github.event.client_payload.issue_key }}" >> $GITHUB_ENV
 
       - name: Get open pull requests
         id: get_prs
