@@ -24,11 +24,11 @@ jobs:
         run: |
           PRS=$(curl -H "Accept: application/vnd.github.v3+json" \
             -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-            https://api.github.com/repos/lolgraphics/lolgraphs.api/pulls)
+            https://api.github.com/repos/lolgraphics/LOL-Graphics-WEB/pulls)
           echo "::set-output name=prs::$PRS"
 
-      - name: Compare branch names
-        id: compare_branches
+      - name: Compare PR bodies
+        id: compare_bodies
         run: |
           ISSUE_KEY=${{ env.ISSUE_KEY }}
           prs='${{ steps.get_prs.outputs.prs }}'
@@ -39,10 +39,10 @@ jobs:
             _jq() {
               echo ${row} | base64 --decode | jq -r ${1}
             }
-            branch_name=$(_jq '.head.ref')
-            echo "Found branch: $branch_name"
-            if [ "$branch_name" == "$ISSUE_KEY" ]; then
-              echo "Branch name $branch_name matches ISSUE_KEY $ISSUE_KEY. Stopping script."
+            pr_body=$(_jq '.body')
+            echo "Found PR body: $pr_body"
+            if [ "$pr_body" == "$ISSUE_KEY" ]; then
+              echo "PR body $pr_body matches ISSUE_KEY $ISSUE_KEY. Stopping script."
               exit 1
             fi
           done
