@@ -2,13 +2,17 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
-  mode: 'development', 
+  mode: 'development',
   entry: './src/main.tsx',
   output: {
     filename: 'bundle.[contenthash].js',
     path: path.resolve(__dirname, 'dist')
   },
   resolve: {
+    alias: {
+      '@Components': path.resolve(__dirname, 'src/components/'),
+      '@Pages': path.resolve(__dirname, 'src/pages/')
+    },
     extensions: ['.ts', '.tsx', '.js', '.jsx']
   },
   module: {
