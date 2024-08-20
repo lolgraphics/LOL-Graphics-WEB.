@@ -59,7 +59,11 @@ module.exports = {
           }
         }
       }
-    ]
+    ],
+    unknownContextCritical: false,
+  },
+  stats: {
+    errorDetails: true,
   },
   plugins: [
     new HtmlWebpackPlugin({
