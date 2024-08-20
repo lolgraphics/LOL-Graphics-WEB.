@@ -11,7 +11,8 @@ module.exports = {
   resolve: {
     alias: {
       '@Components': path.resolve(__dirname, 'src/components/'),
-      '@Pages': path.resolve(__dirname, 'src/pages/')
+      '@Pages': path.resolve(__dirname, 'src/pages/'),
+      '@ProjectRedux': path.resolve(__dirname, 'src/redux/')
     },
     extensions: ['.ts', '.tsx', '.js', '.jsx']
   },

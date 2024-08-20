@@ -1,10 +1,16 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
+function generateRandomBundleName() {
+  const randomNumber = Math.random().toString(36).substring(7);
+  return `index.bundle.${randomNumber}.js`;
+}
+
 module.exports = {
   entry: 'src/main.tsx',
   output: {
-    path: path.resolve(__dirname, 'dist')
+    path: path.resolve(__dirname, 'dist'),
+    filename: generateRandomBundleName(),
   },
   module: {
     rules: [

@@ -7,7 +7,9 @@
     "sourceMap": true,
     "baseUrl": "./src",
     "paths": {
-      "@Components/*": ["components/*"]
+      "@Components/*": ["components/*"],
+      "@Pages/*": ["Pages/*"],
+      "@ProjectRedux/*": ["redux/*"]
     }
   },
   "references": [
