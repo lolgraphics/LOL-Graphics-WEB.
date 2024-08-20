@@ -1,6 +1,5 @@
 import { useDispatch, useSelector } from 'react-redux';
 
-//import {Card} from '../../components/Card';
 import Card from '@Components/Card';
 import Container from '@Components/layout/Container';
 import type { GamesReducer } from '@ProjectRedux/games/gamesTypes';
