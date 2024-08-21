@@ -1,74 +1,11 @@
 {
-    "env": {
-      "browser": true,
-      "es6": true
-    },
-    "extends": [
-      "google",
-      "plugin:react/recommended",
-      "plugin:import/recommended",
-      "plugin:react-hooks/recommended",
-      "plugin:prettier/recommended"
-    ],
-    "parserOptions": {
-      "ecmaFeatures": {
-        "jsx": true
-      },
-      "ecmaVersion": "latest",
-      "sourceType": "module"
-    },
-    "plugins": [
-      "react",
-      "prettier",
-      "import",
-      "react-hooks"
-    ],
-    "settings": {
-      "import/resolver": {
-        "webpack": {
-          "config": "./webpack.dev.js",
-          "env": {
-            "NODE_ENV": "dev",
-            "production": false
-          }
-        }
-      },
-      "react": {
-        "version": "detect"
-      }
-    },
-    "rules": {
-      "import/order": [
-        "error",
-        {
-          "alphabetize": {
-            "order": "asc"
-          },
-          "newlines-between": "always",
-          "groups": ["builtin", "external", "internal", "object", "parent", "sibling", "index", "type"]
-        }
-      ],
-      "prefer-template": "error",
-      "require-jsdoc": 0,
-      "linebreak-style": 2,
-      "no-undef": "error",
-      "new-cap": 0,
-      "max-len": ["error", { "code": 80 }],
-      "react/prop-types": "off",
-      "react/jsx-uses-react": "off",
-      "react/react-in-jsx-scope": "off",
-      "react-hooks/rules-of-hooks": "error",
-      "react-hooks/exhaustive-deps": "error",
-      "indent": ["error", 2],
-      "prettier/prettier": [
-        "error",
-        {
-          "semi": true,
-          "singleQuote": true,
-          "tabWidth": 2,
-          "useTabs": false
-        }
-      ]
+  "prettier/prettier": [
+    "error",
+    {
+      "semi": true,
+      "singleQuote": true,
+      "tabWidth": 2,
+      "useTabs": false
     }
-  }
-  
+  ]
+}
