@@ -5,7 +5,7 @@ import { Provider } from 'react-redux';
 
 import store from './redux/store';
 import queryClient from './service/queryClient';
-import './index.css';
+import './index.scss';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <QueryClientProvider client={queryClient}>
