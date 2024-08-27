@@ -13,6 +13,7 @@ const gameSlice = createSlice({
     initialState,
     reducers: {
         selectGame: (state, action : PayloadAction) => {
+            action
             state.selectedGame = 'Valorant';
         }
     }

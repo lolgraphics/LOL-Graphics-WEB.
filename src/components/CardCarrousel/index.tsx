@@ -1,4 +1,4 @@
-import React, { Dispatch, ReactElement, SetStateAction, useMemo } from 'react';
+import { Dispatch, ReactElement, SetStateAction, useMemo } from 'react';
 
 export type Card = {
   id: number;
@@ -10,14 +10,15 @@ export type Card = {
 type CardCarrouselProps = {
   cards: Card[];
   selectedCard: Card,
-  setSelectedCard: Dispatch<SetStateAction<Card | undefined>>;
+  defaultCard: Card,
+  setSelectedCard: Dispatch<SetStateAction<Card>>;
 };
 
-export default function CardCarrousel({cards, selectedCard, setSelectedCard}: CardCarrouselProps) : ReactElement<CardCarrouselProps> {
+export default function CardCarrousel({cards, selectedCard, setSelectedCard, defaultCard}: CardCarrouselProps) : ReactElement<CardCarrouselProps> {
   const selectedIndex = useMemo(()=> cards.findIndex((card) => card.id === selectedCard.id), [selectedCard.id]);
 
   const handleSelect = (index: number) => {
-    setSelectedCard(cards.find((_, key) => key === index));
+    setSelectedCard(cards.find((_, key) => key === index) || defaultCard);
   };
 
 

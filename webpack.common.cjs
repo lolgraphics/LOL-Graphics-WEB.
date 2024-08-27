@@ -1,12 +1,15 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const Dotenv = require('dotenv-webpack');
+
+require('dotenv').config({path: './.env'});
 
 function generateRandomBundleName() {
   const randomNumber = Math.random().toString(36).substring(7);
   return `index.bundle.${randomNumber}.js`;
 }
 
-module.exports = {
+module.exports = (env) => ({
   entry: 'src/main.tsx',
   output: {
     path: path.resolve(__dirname, 'dist'),
@@ -40,15 +43,9 @@ module.exports = {
       }
     ]
   },
-  resolve: {
-    extensions: ['.ts', '.tsx', '.js', '.jsx'],
-    fallback: {
-      fs: false
-    }
-  },
   plugins: [
-    new HtmlWebpackPlugin({
-      template: './index.html'
-    })
+    new Dotenv({
+      path: `./.env.${env.goal}`,
+    }),
   ]
-};
+})
