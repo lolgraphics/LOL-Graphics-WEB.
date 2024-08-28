@@ -21,21 +21,32 @@ jobs:
         run: |
           echo "Extracting issue details"
           echo "Issue Key: ${{ github.event.client_payload.issue_key }}"
+          echo "Project Name: ${{ github.event.client_payload.project }}"
+      
       - name: Fetch all branches
+        if: ${{ github.event.client_payload.project == 'LOL-Graphics-WEB' || github.event.client_payload.project == 'lolgraphs.api' }}
         run: |
           git fetch --all
+      
       - name: Check if branch exists
         id: check_branch
+        if: ${{ github.event.client_payload.project == 'LOL-Graphics-WEB' || github.event.client_payload.project == 'lolgraphs.api' }}
         run: |
           if git show-ref --verify --quiet refs/remotes/origin/${{ github.event.client_payload.issue_key }}; then
             echo "Branch already exists"
+            echo "branch_exists=true" >> $GITHUB_ENV
           else
             echo "Branch does not exist"
+            echo "branch_exists=false" >> $GITHUB_ENV
           fi
+
       - name: Create new branch
+        if: ${{ env.branch_exists == 'false' && (github.event.client_payload.project == 'LOL-Graphics-WEB' || github.event.client_payload.project == 'lolgraphs.api') }}
         run: |
           git checkout -b ${{ github.event.client_payload.issue_key }}
           git push origin ${{ github.event.client_payload.issue_key }}
+
       - name: Log branch creation
+        if: ${{ env.branch_exists == 'false' && (github.event.client_payload.project == 'LOL-Graphics-WEB' || github.event.client_payload.project == 'lolgraphs.api') }}
         run: |
           echo "Branch created: ${{ github.event.client_payload.issue_key }}"
