@@ -21,7 +21,7 @@ jobs:
         run: |
           echo "Extracting issue details"
           echo "Issue Key: ${{ github.event.client_payload.issue_key }}"
-          echo "Project Name: ${{ github.event.client_payload.project }}"
+          echo "Project Name: ${{ github.event.client_payload.projectgit }}"
       
       - name: Fetch all branches
         if: ${{ github.event.client_payload.project == 'LOL-Graphics-WEB' || github.event.client_payload.project == 'lolgraphs.api' }}
