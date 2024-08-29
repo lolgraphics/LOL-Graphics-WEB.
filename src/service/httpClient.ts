@@ -16,18 +16,18 @@ HttpClient.interceptors.request.use(async (request : InternalAxiosRequestConfig)
 
 HttpClient.interceptors.response.use((response : AxiosResponse) => response, (error) => {
     if (error.response?.status === 500) {
-      console.error(error.response.data, '500')
+      console.error(error?.response.data, '500')
     }
-    else if (error.response?.status === 503) {
+    else if (error?.response?.status === 503) {
       console.error(error.response.data, '503')
     }
-    else if (error.response?.status === 400) {
-      console.error(error.response.data, '400')
+    else if (error?.response?.status === 400) {
+      console.error(error?.response.data, '400')
     }
-    else if (error.response?.status === 404) {
-      console.error(error.response.data, '404')
+    else if (error?.response?.status === 404) {
+      console.error(error?.response.data, '404')
     }
-    else if (error.response?.status === 401) {
+    else if (error?.response?.status === 401) {
       //LogOff();
     }
 

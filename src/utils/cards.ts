@@ -1,4 +1,4 @@
-import { Card } from '@Components/CardCarrousel';
+import { Card } from '@Components/CardCarrousel/types';
 
 export const defaultCards: Card[] = [
   {

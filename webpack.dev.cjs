@@ -37,12 +37,12 @@ module.exports = (env) =>
           use: ['style-loader', 'css-loader', 'sass-loader'],
         },
         {
-          test: /\.(ts|tsx)$/,
+          test: /\.(js|jsx|ts|tsx)$/,
           use: 'babel-loader',
           exclude: /node_modules/,
         },
         {
-          test: /\.(js|jsx)$/,
+          test: /\.(js|jsx|ts|tsx)$/,
           exclude: /node_modules/,
           use: {
             loader: 'babel-loader',
@@ -62,6 +62,7 @@ module.exports = (env) =>
       extensions: ['.js', '.jsx', '.ts', '.tsx'],
       alias: {
         '@Components': path.resolve(__dirname, 'src/components'),
+        '@Utils': path.resolve(__dirname, 'src/utils'),
         '@Pages': path.resolve(__dirname, 'src/Pages'),
         '@ProjectRedux': path.resolve(__dirname, 'src/redux'),
       },

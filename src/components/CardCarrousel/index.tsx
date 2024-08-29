@@ -1,26 +1,12 @@
-import { Dispatch, ReactElement, SetStateAction, useMemo } from 'react';
-
-export type Card = {
-  id: number;
-  title: string;
-  image: string;
-  colorPallete: string;
-};
-
-type CardCarrouselProps = {
-  cards: Card[];
-  selectedCard: Card,
-  defaultCard: Card,
-  setSelectedCard: Dispatch<SetStateAction<Card>>;
-};
-
-export default function CardCarrousel({cards, selectedCard, setSelectedCard, defaultCard}: CardCarrouselProps) : ReactElement<CardCarrouselProps> {
+import React, { useMemo } from 'react';
+import {CardCarrouselProps} from './types';
+ 
+export default function CardCarrousel({cards, selectedCard, setSelectedCard, defaultCard}: CardCarrouselProps) : JSX.Element {
   const selectedIndex = useMemo(()=> cards.findIndex((card) => card.id === selectedCard.id), [selectedCard.id]);
 
   const handleSelect = (index: number) => {
     setSelectedCard(cards.find((_, key) => key === index) || defaultCard);
   };
-
 
   const getCardPosition = (index: number) => {
     const position = index - selectedIndex;
@@ -37,24 +23,26 @@ export default function CardCarrousel({cards, selectedCard, setSelectedCard, def
   };
 
   return (
+    <React.Fragment>
     <div className="relative flex justify-center items-center h-[90%] overflow-hidden transition-transform duration-500 ease-in-out">
         {cards.map((card, index) => (
           <div
-            key={card.id}
-            className={`
-              absolute transition-all duration-500 ease-in-out cursor-pointer 
-              ${getCardPosition(index)}
-              rounded-lg shadow-lg w-5/12
+          key={card.id}
+          className={`
+            absolute transition-all duration-500 ease-in-out cursor-pointer 
+            ${getCardPosition(index)}
+            rounded-lg shadow-lg w-5/12
             `}
             onClick={() => handleSelect(index)}
-          >
+            >
             <img
               src={card.image}
               alt={card.title}
               className="h-[500px] rounded-lg w-full"
-            />
+              />
           </div>
         ))}
     </div>
+    </React.Fragment>
   );
 }
