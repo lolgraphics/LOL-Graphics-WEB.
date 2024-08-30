@@ -14,46 +14,22 @@ module.exports = (env) =>
     module: {
       rules: [
         {
-          test: /\.ts$/,
-          use: 'ts-loader',
+          test: /\.(ts|tsx)$/,  // Alterado para arquivos .ts e .tsx
           exclude: /node_modules/,
+          use: 'ts-loader',  // Usar ts-loader para arquivos TypeScript
+        },
+        {
+          test: /\.(js|jsx|ts|tsx)$/,
+          exclude: /node_modules/,
+          use: 'babel-loader',
         },
         {
           test: /\.css$/,
-          use: [
-            {
-              loader: 'style-loader',
-            },
-            {
-              loader: 'css-loader',
-              options: {
-                sourceMap: true,
-              },
-            },
-          ],
+          use: ['style-loader', 'css-loader'],
         },
         {
           test: /\.s[ac]ss$/i,
           use: ['style-loader', 'css-loader', 'sass-loader'],
-        },
-        {
-          test: /\.(js|jsx|ts|tsx)$/,
-          use: 'babel-loader',
-          exclude: /node_modules/,
-        },
-        {
-          test: /\.(js|jsx|ts|tsx)$/,
-          exclude: /node_modules/,
-          use: {
-            loader: 'babel-loader',
-            options: {
-              presets: [
-                '@babel/preset-env',
-                '@babel/preset-react',
-                '@babel/preset-typescript',
-              ],
-            },
-          },
         },
       ],
       unknownContextCritical: false,
@@ -63,7 +39,7 @@ module.exports = (env) =>
       alias: {
         '@Components': path.resolve(__dirname, 'src/components'),
         '@Utils': path.resolve(__dirname, 'src/utils'),
-        '@Pages': path.resolve(__dirname, 'src/Pages'),
+        '@Pages': path.resolve(__dirname, 'src/pages'),
         '@ProjectRedux': path.resolve(__dirname, 'src/redux'),
       },
     },
