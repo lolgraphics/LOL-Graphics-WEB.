@@ -19,7 +19,7 @@ module.exports = (env) =>
           use: 'ts-loader',  // Usar ts-loader para arquivos TypeScript
         },
         {
-          test: /\.(js|jsx|ts|tsx)$/,
+          test: /\.(js|jsx)$/,
           exclude: /node_modules/,
           use: 'babel-loader',
         },
