@@ -46,13 +46,6 @@ jobs:
           git checkout -b ${{ github.event.client_payload.issue_key }}
           git push origin ${{ github.event.client_payload.issue_key }}
 
-      - name: Copy Git Hook to New Branch
-        if: ${{ env.branch_exists == 'false' && (github.event.client_payload.project == 'LOL-Graphics-WEB' || github.event.client_payload.project == 'lolgraphs.api') }}
-        run: |
-          mkdir -p .git/hooks
-          cp .github/hooks/commit-msg .git/hooks/
-          chmod +x .git/hooks/commit-msg
-
       - name: Log branch creation
         if: ${{ env.branch_exists == 'false' && (github.event.client_payload.project == 'LOL-Graphics-WEB' || github.event.client_payload.project == 'lolgraphs.api') }}
         run: |
