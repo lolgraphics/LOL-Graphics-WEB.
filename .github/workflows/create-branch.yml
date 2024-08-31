@@ -5,7 +5,7 @@ on:
     types: [CREATE_BRANCH]
 
 permissions:
-  contents: write  # Permission required to create branches
+  contents: write 
 
 jobs:
   create-branch:
@@ -14,7 +14,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0  # Fetch all history so we can check branches
+          fetch-depth: 0 
 
       - name: Extract issue details
         id: extract
@@ -22,12 +22,12 @@ jobs:
           echo "Extracting issue details"
           echo "Issue Key: ${{ github.event.client_payload.issue_key }}"
           echo "Project Name: ${{ github.event.client_payload.project }}"
-      
+
       - name: Fetch all branches
         if: ${{ github.event.client_payload.project == 'LOL-Graphics-WEB' || github.event.client_payload.project == 'lolgraphs.api' }}
         run: |
           git fetch --all
-      
+
       - name: Check if branch exists
         id: check_branch
         if: ${{ github.event.client_payload.project == 'LOL-Graphics-WEB' || github.event.client_payload.project == 'lolgraphs.api' }}
@@ -45,6 +45,13 @@ jobs:
         run: |
           git checkout -b ${{ github.event.client_payload.issue_key }}
           git push origin ${{ github.event.client_payload.issue_key }}
+
+      - name: Copy Git Hook to New Branch
+        if: ${{ env.branch_exists == 'false' && (github.event.client_payload.project == 'LOL-Graphics-WEB' || github.event.client_payload.project == 'lolgraphs.api') }}
+        run: |
+          mkdir -p .git/hooks
+          cp .github/hooks/commit-msg .git/hooks/
+          chmod +x .git/hooks/commit-msg
 
       - name: Log branch creation
         if: ${{ env.branch_exists == 'false' && (github.event.client_payload.project == 'LOL-Graphics-WEB' || github.event.client_payload.project == 'lolgraphs.api') }}
