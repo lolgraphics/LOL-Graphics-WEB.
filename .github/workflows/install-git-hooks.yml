@@ -1,0 +1,24 @@
+name: Install Git Hooks
+
+on:
+  push:
+    branches:
+      - develop  # Ou o nome da sua branch principal
+  pull_request:
+    branches:
+      - develop  # Ou o nome da sua branch principal
+
+jobs:
+  install-hooks:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0  
+
+    - name: Install Hooks
+      run: |
+        mkdir -p .git/hooks
+        cp .github/hooks/commit-msg .git/hooks/
+        chmod +x .git/hooks/commit-msg
