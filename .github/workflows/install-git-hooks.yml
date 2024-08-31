@@ -17,6 +17,8 @@ jobs:
       with:
         ref: develop  # Fazer o checkout na branch 'develop'
 
+    - name: Debug Hooks Folder
+      run: ls -la .github/hooks    
     - name: Install Hooks
       run: |
         mkdir -p .git/hooks
