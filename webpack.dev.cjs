@@ -8,7 +8,7 @@ module.exports = (env) =>
     mode: 'development',
     entry: './src/main.tsx',
     output: {
-      filename: 'bundle.[contenthash].js',
+      filename: 'bundle.[contenthash].js', 
       path: path.resolve(__dirname, 'dist'),
     },
     module: {
