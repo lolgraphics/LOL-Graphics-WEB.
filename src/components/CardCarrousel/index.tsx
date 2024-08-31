@@ -1,7 +1,7 @@
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import {CardCarrouselProps} from './types';
  
-export default function CardCarrousel({cards, selectedCard, setSelectedCard, defaultCard}: CardCarrouselProps) : JSX.Element {
+export default function CardCarrousel({cards, selectedCard, setSelectedCard, defaultCard, dataTestId}: CardCarrouselProps) : JSX.Element {
   const selectedIndex = useMemo(()=> cards.findIndex((card) => card.id === selectedCard.id), [selectedCard.id]);
 
   const handleSelect = (index: number) => {
@@ -23,11 +23,12 @@ export default function CardCarrousel({cards, selectedCard, setSelectedCard, def
   };
 
   return (
-    <React.Fragment>
-    <div className="relative flex justify-center items-center h-[90%] overflow-hidden transition-transform duration-500 ease-in-out">
+    <div className="relative flex justify-center items-center h-[90%] overflow-hidden transition-transform duration-500 ease-in-out" data-testid={dataTestId}>
         {cards.map((card, index) => (
           <div
-          key={card.id}
+          key={`card-${card.id}`}
+          id={`card-${card.id}`}
+          data-testid={`card-${card.id}`}
           className={`
             absolute transition-all duration-500 ease-in-out cursor-pointer 
             ${getCardPosition(index)}
@@ -43,6 +44,5 @@ export default function CardCarrousel({cards, selectedCard, setSelectedCard, def
           </div>
         ))}
     </div>
-    </React.Fragment>
   );
 }

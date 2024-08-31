@@ -12,13 +12,14 @@ export default function ChooseAgame() {
  
   return <Container className={selectedCard.colorPallete}>
       <CardCarrousel
+        dataTestId="choose a game card carrousel"
         cards={defaultCards}
         defaultCard={firstCard} 
         selectedCard={selectedCard}
         setSelectedCard={setSelectedCard}
       />
       <div className="riot-container">
-        <Button className="riot-button" label="Analisar" />
+        <Button className="riot-button" label="Analisar" data-testid="choose a game button"/>
       </div>
     </Container>
 }

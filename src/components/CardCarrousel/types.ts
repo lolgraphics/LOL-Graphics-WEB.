@@ -11,5 +11,6 @@ export type CardCarrouselProps = {
     cards: Card[];
     selectedCard: Card,
     defaultCard: Card,
+    dataTestId?: string;
     setSelectedCard: Dispatch<SetStateAction<Card>>;
   };

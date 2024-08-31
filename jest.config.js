@@ -1,6 +1,7 @@
 export default {
   setupFilesAfterEnv: ['./src/setupTest.ts'],
   moduleNameMapper: {
+    '^@Pages/(.*)$': '<rootDir>/src/pages/$1',
     '^@Components/(.*)$': '<rootDir>/src/components/$1',
     '^@Utils/(.*)$': '<rootDir>/src/utils/$1',
   },

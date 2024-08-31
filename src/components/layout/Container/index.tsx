@@ -8,5 +8,5 @@ export interface ContainerProps {
 }
 export default function Container({ children, className = ""}: ContainerProps) {
   const classNames = classnames('h-screen', className);
-  return <div className={classNames}>{children}</div>;
+  return <div data-testid="layout-container" className={classNames}>{children}</div>;
 }
