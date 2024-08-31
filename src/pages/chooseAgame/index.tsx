@@ -11,19 +11,17 @@ const firstCard = defaultCards[0];
 export default function ChooseAgame() {
   const [selectedCard, setSelectedCard] = useState<Card>(firstCard);
  
-  return (
-    <React.Fragment>
-      <Container className={selectedCard.colorPallete}>
-        <CardCarrousel
-          cards={defaultCards}
-          defaultCard={firstCard}
-          selectedCard={selectedCard}
-          setSelectedCard={setSelectedCard}
-        />
-        <div className="riot-container">
-          <Button className="riot-button" label="Analisar" />
-        </div>
-      </Container>
-    </React.Fragment>
-  );
+  return <React.Fragment>
+    <Container className={selectedCard.colorPallete}>
+      <CardCarrousel
+        cards={defaultCards}
+        defaultCard={firstCard}
+        selectedCard={selectedCard}
+        setSelectedCard={setSelectedCard}
+      />
+      <div className="riot-container">
+        <Button className="riot-button" label="Analisar" />
+      </div>
+    </Container>
+  </React.Fragment>
 }
