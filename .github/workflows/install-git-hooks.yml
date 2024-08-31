@@ -15,12 +15,22 @@ jobs:
     steps:
     - uses: actions/checkout@v3
       with:
-        ref: develop  # Fazer o checkout na branch 'develop'
+        ref: develop 
 
-    - name: Debug Hooks Folder
-      run: ls -la .github/hooks    
+    - name: Debug Hooks Folder (antes da cópia)
+      run: ls -la .github/hooks
+
+    - name: Ensure Git Hooks Folder Permissions
+      run: chmod -R 755 .git/hooks
+
     - name: Install Hooks
       run: |
         mkdir -p .git/hooks
-        cp .github/hooks/commit-msg .git/hooks/
+        cp -f .github/hooks/commit-msg .git/hooks/
         chmod +x .git/hooks/commit-msg
+
+    - name: Debug Hooks Folder (após a cópia)
+      run: ls -la .git/hooks
+
+    - name: Verify Checkout
+      run: ls -la .github
