@@ -1,0 +1,28 @@
+#!/bin/sh
+
+# Get the branch name
+branch_name=$(git symbolic-ref --short HEAD)
+
+# Check if the branch name starts with "feature/FEA-" followed by a number
+if [[ ! "$branch_name" =~ ^feature/FEA-[0-9]+$ ]]; then
+  echo "Error: Branch name must follow the format 'feature/FEA-<number_of_task>'."
+  exit 1
+fi
+
+# Extract the prefix from the branch name (FEA-<number_of_task>)
+prefix=$(echo "$branch_name" | sed -n 's/^feature\/\(FEA-[0-9]\+\)$/\1/p')
+
+# Read the commit message
+commit_message=$(cat "$1")
+
+# Check if the commit message starts with the prefix
+if [[ ! "$commit_message" =~ ^$prefix ]]; then
+  echo "Error: The commit message must start with the branch prefix '$prefix'."
+  exit 1
+fi
+
+# Check for duplicate Signed-off-by lines
+if test "" != "$(grep '^Signed-off-by: ' "$1" | sort | uniq -c | sed -e '/^[ 	]*1[ 	]/d')"; then
+  echo >&2 "Duplicate Signed-off-by lines."
+  exit 1
+fi

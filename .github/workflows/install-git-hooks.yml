@@ -20,5 +20,5 @@ jobs:
     - name: Install Hooks
       run: |
         mkdir -p .git/hooks
-        cp .git/hooks/commit-msg .git/hooks/
+        cp .github/hooks/commit-msg .git/hooks/
         chmod +x .git/hooks/commit-msg
