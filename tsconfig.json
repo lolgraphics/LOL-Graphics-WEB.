@@ -1,16 +1,42 @@
 {
-  "files": [],
   "compilerOptions": {
+    "composite": true,
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
+    "target": "ES6",
+    "useDefineForClassFields": true,
+    "lib": ["ES6", "DOM", "DOM.Iterable"],
+    "module": "ES6",
+    "skipLibCheck": true,
+    /* Bundler mode */
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "moduleDetection": "force",
+    "noEmit": false,
+    
+    /* Linting */
+    "strict": true,
+    "noImplicitAny": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
     "jsx": "react-jsx",
+    "outDir": "dist",
     "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true
-  },
-  "references": [
-    {
-      "path": "./tsconfig.app.json"
-    },
-    {
-      "path": "./tsconfig.node.json"
+    "allowSyntheticDefaultImports": true,
+    "sourceMap": true,
+    "paths": {
+      "@Components/*": ["./src/components/*"],
+      "@Utils/*": ["./src/utils/*"],
+      "@Pages/*": ["./src/pages/*"],
+      "@ProjectRedux/*": ["./src/redux/*"]
     }
+  },
+  "include": [  
+    "src", 
+    "jest.config.js",
+    "**/*.ts",
+    "**/*.tsx",
+    "**/*.d.ts"
   ]
 }

@@ -1,8 +1,10 @@
+import React from 'react';
+import ChooseAgame from "./pages/chooseAgame";
+
 export default function App() {
-  return (
-    <div style={{backgroundColor: 'black'}}>
-    lol graphics
-    </div>
-  )
+  return <React.Fragment>
+    <ChooseAgame />
+  </React.Fragment>
 }
 
+ 

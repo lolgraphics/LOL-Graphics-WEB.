@@ -1,29 +1,26 @@
 export default {
+  setupFilesAfterEnv: ['./src/setupTest.ts'],
+  moduleNameMapper: {
+    '^@Components/(.*)$': '<rootDir>/src/components/$1',
+    '^@Utils/(.*)$': '<rootDir>/src/utils/$1',
+  },
   preset: 'ts-jest',
   testEnvironment: 'jsdom',
-  testMatch: ['**/tests/unit/**/*.test.[jt]s?(x)'], 
-  setupFilesAfterEnv: ['@testing-library/jest-dom'],
-  moduleNameMapper: {
-    '\\.(css|less|scss|sass)$': 'identity-obj-proxy'
-  },
+  testMatch: ['**/tests/**/*.test.[jt]s?(x)'],
   transform: {
     '^.+\\.tsx?$': 'ts-jest',
-    '^.+\\.jsx?$': 'babel-jest'
+    '^.+\\.jsx?$': 'babel-jest',
   },
   testPathIgnorePatterns: ['/node_modules/', '/dist/'],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
-
-  // Coverage settings
   collectCoverage: true,
   coverageDirectory: 'coverage',
   coverageReporters: ['lcov', 'json'],
-
-  // Reporter configuration
   reporters: [
     'default',
     ['jest-sonar', {
       outputDirectory: 'coverage/sonar',
-      outputName: 'coverage-report.xml'
-    }]
+      outputName: 'coverage-report.xml',
+    }],
   ],
 };
