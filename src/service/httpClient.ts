@@ -16,7 +16,6 @@ HttpClient.interceptors.request.use(async (request : InternalAxiosRequestConfig)
 
 HttpClient.interceptors.response.use((response : AxiosResponse) => response, (error) => {
     if (error.response?.status === 500) {
-      
       console.error(error.response.data, '500')
     }
     else if (error.response?.status === 503) {
