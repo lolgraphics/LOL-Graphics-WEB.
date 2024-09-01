@@ -1,13 +1,8 @@
 import { useEffect, useMemo } from 'react';
 import { CardCarrouselProps } from './types';
 
-export default function CardCarrousel({
-  cards,
-  selectedCard,
-  setSelectedCard,
-  defaultCard,
-  dataTestId
-}: CardCarrouselProps): JSX.Element {
+export default function CardCarrousel({cards, selectedCard, setSelectedCard, defaultCard, dataTestId}: CardCarrouselProps): JSX.Element {
+
   const selectedIndex = useMemo(() => cards.findIndex((card) => card.id === selectedCard.id), [selectedCard.id]);
 
   const handleSelect = (index: number) => {
@@ -63,7 +58,6 @@ export default function CardCarrousel({
           key={`card-${card.id}`}
           id={`card-${card.id}`}
           data-testid={`card-${card.id}`}
-          role="button"
           tabIndex={0}
           className={`
             absolute transition-all duration-500 ease-in-out cursor-pointer 

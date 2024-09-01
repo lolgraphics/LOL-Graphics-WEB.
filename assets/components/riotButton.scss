@@ -5,7 +5,7 @@ $gradient-end: #ff7d66;
   &-container {
     position: relative;
     bottom: 10%;
-  };
+  }
 
   &-button {
     background: linear-gradient(135deg, $gradient-start 0%, $gradient-end 100%);
