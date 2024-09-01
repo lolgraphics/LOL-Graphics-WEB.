@@ -11,7 +11,7 @@ module.exports = (env) =>
       filename: 'bundle.[contenthash].js', 
       path: path.resolve(__dirname, 'dist'),
     },
-    module: {
+    module: { 
       rules: [
         {
           test: /\.(ts|tsx)$/,  // Alterado para arquivos .ts e .tsx
