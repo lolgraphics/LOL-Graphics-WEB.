@@ -1,10 +1,9 @@
-import React from 'react';
-import ChooseAgame from "./pages/chooseAgame";
+import ChooseAgame from "@Pages/chooseAgame";
 
 export default function App() {
-  return <React.Fragment>
+  return <>
     <ChooseAgame />
-  </React.Fragment>
+  </>
 }
 
  

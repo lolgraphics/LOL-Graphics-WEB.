@@ -1,27 +1,25 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
          
 import CardCarrousel from '@Components/CardCarrousel';
 import { Card } from '@Components/CardCarrousel/types';
 import Button from '@Components/Button';
 import Container from '@Components/layout/Container';
-   
 import { defaultCards } from '@Utils/cards';
  
 const firstCard = defaultCards[0];
 export default function ChooseAgame() {
   const [selectedCard, setSelectedCard] = useState<Card>(firstCard);
  
-  return <React.Fragment>
-    <Container className={selectedCard.colorPallete}>
+  return <Container className={selectedCard.colorPallete}>
       <CardCarrousel
+        dataTestId="choose a game card carrousel"
         cards={defaultCards}
-        defaultCard={firstCard}
+        defaultCard={firstCard} 
         selectedCard={selectedCard}
         setSelectedCard={setSelectedCard}
       />
       <div className="riot-container">
-        <Button className="riot-button" label="Analisar" />
+        <Button className="riot-button" label="Analisar" data-testid="choose a game button"/>
       </div>
     </Container>
-  </React.Fragment>
 }
