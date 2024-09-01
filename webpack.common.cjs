@@ -11,7 +11,7 @@ function generateRandomBundleName() {
 
 module.exports = (env) => ({
   entry: 'src/main.tsx',
-  output: {
+  output: { 
     path: path.resolve(__dirname, 'dist'),
     filename: generateRandomBundleName(),
   },
