@@ -9,7 +9,7 @@ function generateRandomBundleName() {
   return `index.bundle.${randomNumber}.js`;
 } 
 
-module.exports = (env) => ({
+module.exports = (env) => ({ 
   entry: 'src/main.tsx',
   output: { 
     path: path.resolve(__dirname, 'dist'),
