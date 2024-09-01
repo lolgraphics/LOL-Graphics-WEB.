@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event'; // Importar o userEvent para simular eventos do teclado
 
 import CardCarrousel from '@Components/CardCarrousel';
@@ -16,7 +16,7 @@ describe('CardCarrousel Component', () => {
         defaultCard={defaultCards[0]}
         selectedCard={selectedCard}
         setSelectedCard={setSelectedCard}
-        dataTestId="card-carrousel"
+        dataTestId="card-carrousel" // Adicione um data-testid para o contêiner principal
       />
     );
   };
@@ -46,23 +46,34 @@ describe('CardCarrousel Component', () => {
     expect(selectedFirstCard).not.toHaveClass('z-10 scale-110');
   });
 
-  it('changes the selected card with arrow keys', () => {
+  it('changes the selected card with arrow keys', async () => {
     render(<Wrapper />);
 
+    // Acesse o contêiner principal do carrossel para simular eventos de teclado
     const carrouselContainer = screen.getByTestId('card-carrousel');
 
+    // Verifica o estado inicial
     const selectedFirstCard = screen.getByTestId(`card-${defaultCards[0].id}`);
     expect(selectedFirstCard).toHaveClass('z-10 scale-110');
 
+    // Simula pressionamento da tecla "ArrowRight" para selecionar o próximo cartão
     userEvent.type(carrouselContainer, '{arrowright}');
-    
-    const selectedSecondCard = screen.getByTestId(`card-${defaultCards[1].id}`);
-    expect(selectedSecondCard).toHaveClass('z-10 scale-110');
-    expect(selectedFirstCard).not.toHaveClass('z-10 scale-110');
 
+    // Aguarda o DOM atualizar
+    await waitFor(() => {
+      const selectedSecondCard = screen.getByTestId(`card-${defaultCards[1].id}`);
+      expect(selectedSecondCard).toHaveClass('z-10 scale-110');
+      expect(selectedFirstCard).not.toHaveClass('z-10 scale-110');
+    });
+
+    // Simula pressionamento da tecla "ArrowLeft" para retornar ao primeiro cartão
     userEvent.type(carrouselContainer, '{arrowleft}');
-    
-    expect(selectedFirstCard).toHaveClass('z-10 scale-110');
-    expect(selectedSecondCard).not.toHaveClass('z-10 scale-110');
+
+    // Aguarda o DOM atualizar
+    await waitFor(() => {
+      expect(selectedFirstCard).toHaveClass('z-10 scale-110');
+      const selectedSecondCard = screen.getByTestId(`card-${defaultCards[1].id}`);
+      expect(selectedSecondCard).not.toHaveClass('z-10 scale-110');
+    });
   });
 });
