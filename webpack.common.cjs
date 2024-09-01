@@ -8,7 +8,7 @@ function generateRandomBundleName() {
   const randomNumber = Math.random().toString(36).substring(7);
   return `index.bundle.${randomNumber}.js`;
 } 
-
+ 
 module.exports = (env) => ({ 
   entry: 'src/main.tsx',
   output: { 
