@@ -1,11 +1,12 @@
 const path = require('path');
+const {merge} = require('webpack-merge');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
-
-module.exports = {
+const common = require('./webpack.common.cjs');
+module.exports = (env) => merge(common(env),{
   mode: 'production',
   entry: './src/main.tsx',
   output: {
@@ -13,6 +14,11 @@ module.exports = {
     path: path.resolve(__dirname, 'dist')
   },
   resolve: {
+    alias: {
+      '@Components': path.resolve(__dirname, 'src/components/'),
+      '@Pages': path.resolve(__dirname, 'src/pages/'),
+      '@ProjectRedux': path.resolve(__dirname, 'src/redux/')
+    },
     extensions: ['.ts', '.tsx', '.js', '.jsx']
   },
   module: {
@@ -82,4 +88,4 @@ module.exports = {
       new CssMinimizerPlugin()
     ]
   }
-};
+});

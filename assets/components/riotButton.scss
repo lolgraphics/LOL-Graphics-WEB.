@@ -1,0 +1,27 @@
+$gradient-start: #ff3342;
+$gradient-end: #ff7d66;
+
+.riot {
+  &-container {
+    position: relative;
+    bottom: 10%;
+  };
+
+  &-button {
+    background: linear-gradient(135deg, $gradient-start 0%, $gradient-end 100%);
+    color: white !important;
+    font-weight: bold;
+    padding: 0.7rem 2.5rem !important;
+    border-radius: 0.375rem;
+    transition: opacity 0.3s ease;
+    position: fixed;
+    top: 85%;
+    left: 48%;
+
+    &:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+      filter: brightness(1.2) contrast(1.1); 
+    }
+  }
+}

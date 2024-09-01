@@ -1,22 +1,25 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const Dotenv = require('dotenv-webpack');
 
-module.exports = {
-  entry: './src/main.tsx',
+require('dotenv').config({path: './.env'});
+
+function generateRandomBundleName() {
+  const randomNumber = Math.random().toString(36).substring(7);
+  return `index.bundle.${randomNumber}.js`;
+}
+
+module.exports = (env) => ({
+  entry: 'src/main.tsx',
   output: {
-    path: path.resolve(__dirname, 'dist')
-  },
-  resolve: {
-    extensions: ['.ts', '.tsx', '.js']
+    path: path.resolve(__dirname, 'dist'),
+    filename: generateRandomBundleName(),
   },
   module: {
     rules: [
       {
         test: /\.css$/,
-        use: [
-          'style-loader', 
-          'css-loader'
-        ],
+        use: ['style-loader', 'css-loader'],
         exclude: /node_modules/
       },
       {
@@ -41,8 +44,8 @@ module.exports = {
     ]
   },
   plugins: [
-    new HtmlWebpackPlugin({
-      template: './index.html'
-    })
+    new Dotenv({
+      path: `./.env.${env.goal}`,
+    }),
   ]
-};
+})

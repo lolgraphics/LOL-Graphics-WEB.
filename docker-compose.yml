@@ -1,0 +1,9 @@
+services:
+  dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/app
+    working_dir: /app
+    entrypoint: ["/bin/bash", "-c", "/app/install-hooks.sh && tail -f /dev/null"]

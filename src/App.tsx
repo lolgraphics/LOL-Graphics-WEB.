@@ -1,8 +1,9 @@
+import ChooseAgame from "@Pages/chooseAgame";
+
 export default function App() {
-  return (
-    <div style={{backgroundColor: 'black'}}>
-    lol graphics
-    </div>
-  )
+  return <>
+    <ChooseAgame />
+  </>
 }
 
+ 
