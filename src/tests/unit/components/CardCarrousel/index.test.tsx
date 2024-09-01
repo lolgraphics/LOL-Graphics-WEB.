@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
+import userEvent from '@testing-library/user-event'; // Importar o userEvent para simular eventos do teclado
 
 import CardCarrousel from '@Components/CardCarrousel';
 import { Card } from '@Components/CardCarrousel/types';
@@ -15,6 +16,7 @@ describe('CardCarrousel Component', () => {
         defaultCard={defaultCards[0]}
         selectedCard={selectedCard}
         setSelectedCard={setSelectedCard}
+        dataTestId="card-carrousel"
       />
     );
   };
@@ -42,6 +44,25 @@ describe('CardCarrousel Component', () => {
 
     const selectedFirstCard = screen.getByTestId(`card-${defaultCards[0].id}`);
     expect(selectedFirstCard).not.toHaveClass('z-10 scale-110');
+  });
 
+  it('changes the selected card with arrow keys', () => {
+    render(<Wrapper />);
+
+    const carrouselContainer = screen.getByTestId('card-carrousel');
+
+    const selectedFirstCard = screen.getByTestId(`card-${defaultCards[0].id}`);
+    expect(selectedFirstCard).toHaveClass('z-10 scale-110');
+
+    userEvent.type(carrouselContainer, '{arrowright}');
+    
+    const selectedSecondCard = screen.getByTestId(`card-${defaultCards[1].id}`);
+    expect(selectedSecondCard).toHaveClass('z-10 scale-110');
+    expect(selectedFirstCard).not.toHaveClass('z-10 scale-110');
+
+    userEvent.type(carrouselContainer, '{arrowleft}');
+    
+    expect(selectedFirstCard).toHaveClass('z-10 scale-110');
+    expect(selectedSecondCard).not.toHaveClass('z-10 scale-110');
   });
 });
