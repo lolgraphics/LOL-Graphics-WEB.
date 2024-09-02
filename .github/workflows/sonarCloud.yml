@@ -2,7 +2,8 @@ name: SonarCloud Push Analysis
 on:
   push:
     branches:
-      - "*"
+      - "features/**"
+      - "bugs/**"
 jobs:
   sonarcloud:
     name: SonarCloud
